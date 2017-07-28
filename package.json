@@ -1,0 +1,38 @@
+{
+  "name": "simple-blog",
+  "version": "1.0.0",
+  "description": "A simple nodejs blog api",
+  "main": "server.js",
+  "scripts": {
+    "init": "nodemon server.js",
+    "test": "mocha --require test/bootstrap.js test/**/*Test.js",
+    "load-fixtures": "node fixtures/seed.js"
+  },
+  "keywords": [
+    "simple",
+    "blog",
+    "api"
+  ],
+  "author": "depixelado",
+  "license": "ISC",
+  "dependencies": {
+    "appBootstrap": "./appBootstrap",
+    "bcrypt-nodejs": "0.0.3",
+    "body-parser": "^1.17.2",
+    "dotenv": "^4.0.0",
+    "express": "^4.15.3",
+    "helmet": "^3.8.0",
+    "lodash": "^4.17.4",
+    "mongoose": "^4.11.4",
+    "mongoose-pagination": "^1.0.0",
+    "passport": "^0.3.2",
+    "passport-http": "^0.3.0",
+    "prompt": "^1.0.0"
+  },
+  "devDependencies": {
+    "faker": "^4.1.0",
+    "mocha": "^3.4.2",
+    "should": "^11.2.1",
+    "supertest": "^3.0.0"
+  }
+}
