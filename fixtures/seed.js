@@ -1,5 +1,6 @@
-const mongoose = require('mongoose');
+const _ = require('lodash');
 const config = require('./../config');
+const mongoose = require('mongoose');
 
 /**
  * Seeds
@@ -54,14 +55,12 @@ function deleteDatabaseQuestion() {
  * @description Populate the database with the different seeds
  */
 function seed() {
-  console.log('\nSeeding the database...\n');
-  var seedPromises = seeds.map(seed => seed());
+  var seedPromises = seeds.reduce( 
+    (acc, seed) => acc.then(() => seed()), 
+    Promise.resolve()
+  );
 
-  var seedsIterator = seeds[Symbol.iterator]();
-
-  
-
-  Promise.all(seedPromises)
+  seedPromises
     .then(results => {
       console.log('\nSeeding finished.')
       process.exit();
