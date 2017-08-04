@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 
 // Global variables
 __root = __dirname + '/../';
+db = require(__root + 'db');
 app = require('./../appBootstrap');
 
 // Datbase connection

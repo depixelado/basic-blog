@@ -1,18 +1,7 @@
 // Required packages
-const mongoose = require('mongoose');
 const config = require('./config');
+const db = require('./db');
 var app = require('./appBootstrap');
-
-// Datbase connection
-mongoose.Promise = global.Promise; // Use default promises on mongoose
-
-// Connect to db
-var onDbConnected = mongoose.connect(
-  'mongodb://' + config.db.host + '/' + config.db.name, 
-  { useMongoClient: true }
-);
-
-onDbConnected.then(initServer);
 
 /**
  * @function initServer
@@ -27,3 +16,7 @@ function initServer () {
   
   console.log('Server listenging on: ' + config.app.port);
 }
+
+// Connect to DB
+db.connect()
+  .then(initServer);

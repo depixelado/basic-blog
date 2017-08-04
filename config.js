@@ -11,7 +11,7 @@ const config = {
     name : process.env.DB_NAME
   },
   app: {
-    port : process.env.PORT || 8080,
+    port : process.env.PORT || 3000,
 
     // Pagination
     pageLimit : process.env.PAGE_LIMIT || 10,

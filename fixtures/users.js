@@ -34,12 +34,12 @@ function generateUsers(quantity) {
 
 /**
  * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
- * @function generate
+ * @function seed
  * @public 
  * @return {Promise} Resolved when users are introduced on the db
  * @description Save into the database a collection of random users 
  */
-const generate = function generate() {
+const seed = function seed() {
   return new Promise(function (resolve, reject) {
       // Save all users and get a Promise array
       let saveUsers = generateUsers(NUM_OF_USERS)
@@ -55,12 +55,14 @@ const generate = function generate() {
       
       // Resolve promise when all users are saved
       Promise.all(saveUsers)
-        .then((result) => {
-          console.log(' - ' + NUM_OF_USERS + ' users generated.');
-          resolve()
+        .then((users) => {
+          resolve({
+            name: 'users',
+            items: users
+          })
         })
         .catch(reject);
   });
 }
 
-module.exports = generate;
+module.exports = seed;

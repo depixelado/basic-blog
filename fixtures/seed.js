@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const config = require('./../config');
 const mongoose = require('mongoose');
+const db = require('./../db');
 
 /**
  * Seeds
@@ -41,26 +42,23 @@ function deleteDatabaseQuestion() {
   prompt('Do you want to empty the current database Y/N? ', function(input) {
     if (input.toLowerCase() === 'y' || input.toLowerCase() === 'yes') {
       // Drop the database
-      mongoose.connection.db.dropDatabase();
+      db.drop();
     }
 
     // Seed database
-    seed();
+    seed(seeds);
   })
 }
 
 /**
  * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
  * @function seed
+ * @param {Array} seeds Collection of functions which will seed the database
  * @description Populate the database with the different seeds
  */
-function seed() {
-  var seedPromises = seeds.reduce( 
-    (acc, seed) => acc.then(() => seed()), 
-    Promise.resolve()
-  );
-
-  seedPromises
+function seed(seeds) {
+  var verbosity = true;
+  db.seed(seeds, verbosity)
     .then(results => {
       console.log('\nSeeding finished.')
       process.exit();
@@ -75,15 +73,7 @@ function seed() {
  */
 function init() {
   // Connect to db
-  mongoose.Promise = global.Promise; // Use default promises on mongoose
-
-  var onDbConnected = mongoose.connect(
-    'mongodb://' + config.db.host + '/' + config.db.name, 
-    { useMongoClient: true }
-  );
-
-  // Seed datbase once db connection is established
-  onDbConnected.then(deleteDatabaseQuestion);
+  db.connect().then(deleteDatabaseQuestion);
 }
 
 // Init seeding process
