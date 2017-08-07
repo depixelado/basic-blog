@@ -18,8 +18,14 @@ const PostSchema = new mongoose.Schema({
         required: [true, 'Post body required'] 
     },
     tags: Array,
-    createdAt: Date,
-    updatedAt: Date,
+    createdAt: {
+        type: Date,
+        required: [true, 'createdAt required']
+    },
+    updatedAt: {
+        type: Date,
+        required: [true, 'updatedAt required']
+    }
 });
 
 /* HOOKS */

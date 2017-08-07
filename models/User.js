@@ -12,8 +12,14 @@ const UserSchema = mongoose.Schema({
     type: String,
     required: true
   },
-  createdAt: Date,
-  updatedAt: Date,
+  createdAt: {
+    type: Date,
+    required: [true, 'createdAt required']
+  },
+  updatedAt: {
+    type: Date,
+    required: [true, 'updatedAt required']
+  }
 });
 
 /* METHODS */
