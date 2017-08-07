@@ -16,9 +16,8 @@ exports.store = function store(req, res) {
     title: req.body.title,
     slug: _.kebabCase(req.body.title), // Generate slug from title
     body: req.body.body,
-    tags: utils.string2TagsArray(req.body.tags), // Convert tags string on an array
-    createdAt: new Date(), // Generate dates
-    updatedAt: new Date()
+    tags: utils.string2TagsArray(req.body.tags), // Convert tags string on an array,
+    userId: req.user._id
   });
 
   post.save()

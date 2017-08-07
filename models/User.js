@@ -11,7 +11,9 @@ const UserSchema = mongoose.Schema({
   password: {
     type: String,
     required: true
-  }
+  },
+  createdAt: Date,
+  updatedAt: Date,
 });
 
 /* METHODS */
@@ -60,5 +62,14 @@ UserSchema.pre('save', function cryptPassword(callback) {
   });
 });
 
+UserSchema.pre('save', function dates(callback) {
+  let user = this;
+
+  // Break out if password hasn't changed
+  if (user.isNew) user.createdAt = new Date();
+  user.updatedAt = new Date();
+
+  callback();
+});
 
 module.exports = mongoose.model('users', UserSchema);
