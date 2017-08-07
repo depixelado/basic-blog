@@ -110,6 +110,8 @@ const seedCollection = function seedCollection(data, name) {
   });
 };
 
+/* DB Utils */
+
 /**
  * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
  * @function seed
@@ -131,6 +133,31 @@ exports.seed = function seed(seeds, verbose = false) {
   );
 }
 
+/**
+ * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
+ * @function close
+ * @return {Promise}
+ * @description Close db connection
+ */
 exports.close = function close() {
   mongoose.connection.close();
 }
+
+/**
+ * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
+ * @function pluck
+ * @param {String} collection Collection name
+ * @param {String} field Property to be retrieved
+ * @return {Array} Array of values of the selected field
+ */
+exports.pluck = function pluck(collection, field) {
+    let propertyMap = {};
+    propertyMap[field] = 1;
+
+    return new Promise((resolve, reject) => {
+      state.db.collection(collection).find(null, propertyMap).toArray((error, result) => {
+        if (error) return resolve(error);
+        resolve(result.map(item => item[field]));
+      } );
+    });
+};

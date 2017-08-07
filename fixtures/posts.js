@@ -2,6 +2,7 @@ const _ = require('lodash');
 const faker = require('faker');
 const Post = require('../models/Post');
 const utils = require('../utils.js');
+const db = require('../db');
 
 // CONFIG
 const NUM_OF_POSTS = 50;
@@ -35,20 +36,46 @@ function generateTags(min, max) {
  * @description Generate a collection of random posts
  */
 function generatePosts(quantity) {
-  let posts = [];
-  for(let i = 0; i < quantity; i++) {
-    let title = faker.lorem.sentences(1);
-    let tags =  generateTags(MIN_TAGS_PER_POST, MAX_TAGS_PER_POST);
+  return db.pluck('users', '_id')
+    .then((userIds) => {
+      let posts = [];
+      for(let i = 0; i < quantity; i++) {
+        let title = faker.lorem.sentences(1);
+        let tags =  generateTags(MIN_TAGS_PER_POST, MAX_TAGS_PER_POST);
+        let userId = userIds[Math.floor(Math.random() * userIds.length)];
 
-    posts.push(new Post({
-      title: title,
-      slug: _.kebabCase(title),
-      body: faker.lorem.paragraphs(2),
-      tags: tags
-    }));
-  }
+        posts.push(new Post({
+          title: title,
+          slug: _.kebabCase(title),
+          body: faker.lorem.paragraphs(2),
+          tags: tags,
+          userId: userId
+        }));
+      }
 
-  return posts;
+      return Promise.resolve(posts);
+    });
+};
+
+/**
+ * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
+ * @function seedPosts
+ * @param {Array} posts Array of Post models
+ * @return {Promise}
+ * @description seed posts into the database
+ */
+const seedPosts = function seedPosts(posts) {
+  // Save all posts and get a Promise array
+  let savePosts = posts.map((post) => post.save());
+  
+  // Resolve promise when all posts are saved
+  return Promise.all(savePosts)
+    .then((posts) => {
+      return Promise.resolve({
+        name: 'posts',
+        items: posts
+      })
+    });
 }
 
 /**
@@ -59,29 +86,7 @@ function generatePosts(quantity) {
  * @description Save into the database a collection of random posts 
  */
 const seed = function seed() {
-  return new Promise(function (resolve, reject) {
-      // Save all posts and get a Promise array
-      let savePosts = generatePosts(NUM_OF_POSTS)
-        .map(post => {
-          return new Promise(function (resolve, reject) {
-            // Post saved one by one to execute 
-            // PostSchema pre hook to hass password
-            post.save()
-              .then(resolve)
-              .catch(reject)
-          });
-        });
-      
-      // Resolve promise when all posts are saved
-      Promise.all(savePosts)
-        .then((posts) => {
-          resolve({
-            name: 'posts',
-            items: posts
-          })
-        })
-        .catch(reject);
-  });
+  return generatePosts(NUM_OF_POSTS).then(seedPosts);
 }
 
 module.exports = seed;
