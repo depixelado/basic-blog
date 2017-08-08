@@ -17,7 +17,9 @@ exports.store = function store(req, res) {
     slug: _.kebabCase(req.body.title), // Generate slug from title
     body: req.body.body,
     tags: utils.string2TagsArray(req.body.tags), // Convert tags string on an array,
-    userId: req.user._id
+    userId: req.user._id,
+    createdAt: new Date(), // Generate dates
+    updatedAt: new Date()
   });
 
   post.save()
@@ -75,10 +77,10 @@ exports.show = function show(req, res) {
 exports.update = function updatePost(req, res) {
   Post.findById(req.params.postId).exec()
     .then(post => {
-      post.title = req.body.title
-      post.slug = utils.slugify(req.body.title);
-      post.body = req.body.body
-      post.tags = utils.string2TagsArray(req.body.tags);
+      post.title = req.body.title || post.title;
+      post.slug = utils.slugify(req.body.title) || post.slug;
+      post.body = req.body.body || post.body;
+      post.tags = utils.string2TagsArray(req.body.tags) || post.tags;
 
       return post.save()
     })

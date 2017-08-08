@@ -1,31 +1,31 @@
 const mongoose = require('mongoose');
 
 const PostSchema = new mongoose.Schema({
-    userId: {
-        type: String,
-        required: [true, 'User ID required']
-    },
-    title: { 
-        type: String, 
-        required: [true, 'Post title required'] 
-    },
-    slug: { 
-        type: String, 
-        required: [true, 'Post slug required'] 
-    },
-    body: { 
-        type: String, 
-        required: [true, 'Post body required'] 
-    },
-    tags: Array,
-    createdAt: {
-        type: Date,
-        required: [true, 'createdAt required']
-    },
-    updatedAt: {
-        type: Date,
-        required: [true, 'updatedAt required']
-    }
+  userId: {
+    type: String,
+    required: [true, 'User ID required']
+  },
+  title: { 
+    type: String, 
+    required: [true, 'Post title required'] 
+  },
+  slug: { 
+    type: String, 
+    required: [true, 'Post slug required'] 
+  },
+  body: { 
+    type: String, 
+    required: [true, 'Post body required'] 
+  },
+  tags: Array,
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
+  }
 });
 
 /* HOOKS */

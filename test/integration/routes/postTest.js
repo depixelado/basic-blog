@@ -1,3 +1,5 @@
+require(__root + 'test/integration/loadFixtures');
+
 const request = require('supertest');
 
 // Api path to posts
