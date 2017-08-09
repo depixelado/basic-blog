@@ -110,3 +110,45 @@ exports.remove = function remove(req, res) {
         .json({ message: 'Error: Unable to delete the resource' });
     });
 }
+
+/**
+ * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
+ * @function commentList
+ * @param {Object} req HTTP request object
+ * @param {Object} res HTTP response object
+ * @description Show all comments from a post on the database
+ */
+exports.commentList = function commentList(req, res) {
+  Post.findById(req.params.postId).exec()
+    .then(post => res.json(post.comments))
+    .catch((err) => {
+      res
+        .status(404)
+        .json({ message: err });
+    });
+};
+
+/**
+ * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
+ * @function commentStore
+ * @param {Object} req HTTP request object
+ * @param {Object} res HTTP response object
+ * @description Store a comment inside a post
+ */
+exports.commentStore = function commentStore(req, res) {
+  Post.findById(req.params.postId).exec()
+    .then(post => {
+      post.comments.unshift({
+        body: req.body.body,
+        userId: req.user._id
+      })
+
+      return post.save()
+    })
+    .then(post => res.json(post.comments[0]))
+    .catch(error => {
+      res
+        .status(404)
+        .json({ message: error });
+    });
+}

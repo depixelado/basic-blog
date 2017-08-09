@@ -18,4 +18,10 @@ router.route('/:postId').put(postController.update)
 /* DELETE request to delete a Post */
 router.route('/:postId').delete(postController.remove);
 
+/* GET request to show all Comments. */
+router.route('/:postId/comments').get(pagination, postController.commentList);
+
+/* POST request to create a Comment */
+router.route('/:postId/comments').post(postController.commentStore);
+
 module.exports = router;

@@ -1,13 +1,16 @@
 const _ = require('lodash');
+const Comment = require('../models/Comment');
+const db = require('../db');
 const faker = require('faker');
 const Post = require('../models/Post');
 const utils = require('../utils.js');
-const db = require('../db');
 
 // CONFIG
 const NUM_OF_POSTS = 50;
 const MIN_TAGS_PER_POST = 1;
 const MAX_TAGS_PER_POST = 5;
+const MIN_COMMENTS_PER_POST = 0;
+const MAX_COMMENTS_PER_POST = 20;
 
 /**
  * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
@@ -30,6 +33,29 @@ function generateTags(min, max) {
 
 /**
  * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
+ * @function generateComments
+ * @private 
+ * @param {Number} min Minimum amount of generated comments
+ * @param {Number} max Max amount of generated comments
+ * @description Generate random comments
+ */
+function generateComments(userIds, min, max) {
+  let comments = [];
+  let commentsQuantity = Math.floor(Math.random() * (max-min)) + min;
+  let userId = userIds[Math.floor(Math.random() * userIds.length)];
+
+  for(let i = min; i <= commentsQuantity; i++) {
+    comments.push({
+      body: faker.lorem.paragraphs(2),
+      userId: userId
+    });
+  }
+
+  return comments;
+}
+
+/**
+ * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
  * @function generatePosts
  * @private 
  * @param {Number} quantity Amount of posts to be generated
@@ -43,13 +69,15 @@ function generatePosts(quantity) {
         let title = faker.lorem.sentences(1);
         let tags =  generateTags(MIN_TAGS_PER_POST, MAX_TAGS_PER_POST);
         let userId = userIds[Math.floor(Math.random() * userIds.length)];
+        let comments = generateComments(userIds, MIN_TAGS_PER_POST, MAX_TAGS_PER_POST);
 
         posts.push(new Post({
           title: title,
           slug: _.kebabCase(title),
           body: faker.lorem.paragraphs(2),
           tags: tags,
-          userId: userId
+          userId: userId,
+          comments: comments
         }));
       }
 

@@ -1,27 +1,13 @@
 const mongoose = require('mongoose');
-const Comment = require('./Comment');
 
-const PostSchema = new mongoose.Schema({
+const CommentSchema = new mongoose.Schema({
   userId: {
     type: String,
     required: [true, 'User ID required']
   },
-  title: { 
-    type: String, 
-    required: [true, 'Post title required'] 
-  },
-  slug: { 
-    type: String, 
-    required: [true, 'Post slug required'] 
-  },
   body: { 
     type: String, 
-    required: [true, 'Post body required'] 
-  },
-  tags: Array,
-  comments: {
-    type: [Comment],
-    default: []
+    required: [true, 'Comment body required'] 
   },
   createdAt: {
     type: Date,
@@ -35,7 +21,7 @@ const PostSchema = new mongoose.Schema({
 
 /* HOOKS */
 
-// Executed before each PostSchema.save() call
+// Executed before each CommentSchema.save() call
 /**
  * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
  * @private
@@ -43,7 +29,7 @@ const PostSchema = new mongoose.Schema({
  * @param {Function} cb Callback function which will be executed after the process
  * @description Updates createAt and updateAt values
  */
-PostSchema.pre('save', function dates(callback) {
+CommentSchema.pre('save', function dates(callback) {
   let post = this;
 
   // Break out if password hasn't changed
@@ -53,4 +39,4 @@ PostSchema.pre('save', function dates(callback) {
   callback();
 });
 
-module.exports = mongoose.model('posts', PostSchema);
+module.exports = CommentSchema;
