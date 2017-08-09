@@ -81,7 +81,8 @@ describe('POSTS', function() {
 
     it('gets a list of one post when limit is 1', function(done) {
       request(app)
-        .get(postResourcePath + '?limit=1')      .expect('Content-Type', /json/)
+        .get(postResourcePath + '?limit=1')      
+        .expect('Content-Type', /json/)
         .auth('admin', 'admin')
         .set('Accept', 'application/json')
         .expect(200, done)
@@ -107,13 +108,17 @@ describe('POSTS', function() {
         tags : ['cat', 'computer']
       };
 
-      var checkPost = function checkPost(res) {
+      var checkPost = function checkPost(done, error, res) {
         request(app)
           .get(postResourcePath + '/' + res.body._id)
           .auth('admin', 'admin')
           .expect('Content-Type', /json/)
+          .expect(200)
           .expect(checkResponseObjectProperties.bind(null, expectedResult))
-          .expect(200);
+          .end((error) => {
+            if (error) throw new Error(error);
+            done();
+          });
       }
 
       request(app)
@@ -121,8 +126,8 @@ describe('POSTS', function() {
         .auth('admin', 'admin')
         .send(post)
         .expect('Content-Type', /json/)
-        .expect(checkPost)
-        .expect(200, done)
+        .expect(200)
+        .end(checkPost.bind(null, done))
     });
 
     it('gets 404 when posts does not exists', function(done) {
@@ -134,4 +139,42 @@ describe('POSTS', function() {
     });
   });
 
+  describe('PUT posts/:postId (' + postResourcePath + '/:postId', function() {
+    it('updates a post and values change', function(done) {
+      var updatePost = function updatePost(done, error, res){
+        let post = {
+          title: 'test title updated',
+          body: 'body text updated',
+          tags: 'dog, cat'
+        };
+
+        let expectedResult = {
+          title : 'test title updated', 
+          slug : 'test-title-updated', 
+          body : 'body text updated', 
+          tags : ['dog', 'cat']
+        }
+        
+        request(app)
+          .put(postResourcePath + '/' + res.body[0]._id)
+          .auth('admin', 'admin')
+          .set('Accept', 'application/json')
+          .send(post)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .expect(checkResponseObjectProperties.bind(null, expectedResult))
+          .end((err) => {
+              if (err) throw new Error(err);
+              done();
+          });
+      };
+
+      // Get first post
+      request(app)
+        .get(postResourcePath)      
+        .auth('admin', 'admin')
+        .expect('Content-Type', /json/)
+        .end(updatePost.bind(null, done))
+    });
+  });
 });

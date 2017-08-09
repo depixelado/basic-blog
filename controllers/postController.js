@@ -18,12 +18,10 @@ exports.store = function store(req, res) {
     body: req.body.body,
     tags: utils.string2TagsArray(req.body.tags), // Convert tags string on an array,
     userId: req.user._id,
-    createdAt: new Date(), // Generate dates
-    updatedAt: new Date()
   });
 
   post.save()
-    .then((doc) => res.json(post))
+    .then(post => res.json(post))
     .catch(err => {
       res
         .status(400)
@@ -88,7 +86,7 @@ exports.update = function updatePost(req, res) {
     .catch(error => {
       res
         .status(404)
-        .json({ message: err });
+        .json({ message: error });
     });
 }
 
