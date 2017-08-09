@@ -20,5 +20,6 @@
 1. Install and create the app containers ```docker-compose up -d```
 2. Install dependencies ```npm install```
 3. Create a .env file from .env.sample and customize it
-4. Seed databae ```npm run load-fixtures```
-5. Run the server ```npm run init```
+4. Test everything works fine with ```npm run test```
+5. Seed databae ```npm run load-fixtures```
+6. Run the server ```npm run init```
