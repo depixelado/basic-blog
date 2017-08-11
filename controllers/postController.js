@@ -1,7 +1,9 @@
+require('mongoose-pagination');
+
 const _ = require('lodash');
 const utils = require('./../utils');
 const Post = require('./../models/Post');
-require('mongoose-pagination');
+const mongoose = require('mongoose');
 
 /**
  * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
@@ -119,8 +121,14 @@ exports.remove = function remove(req, res) {
  * @description Show all comments from a post on the database
  */
 exports.commentList = function commentList(req, res) {
+  // Pagination for comments
+  let sliceStart = req.query.page * req.query.limit - req.query.limit;
+  let sliceEnd = sliceStart + req.query.limit;
+
   Post.findById(req.params.postId).exec()
-    .then(post => res.json(post.comments))
+    .then(post => {
+      res.json(post.comments.slice(sliceStart, sliceEnd))
+    })
     .catch((err) => {
       res
         .status(404)
@@ -150,5 +158,67 @@ exports.commentStore = function commentStore(req, res) {
       res
         .status(404)
         .json({ message: error });
+    });
+};
+
+/**
+ * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
+ * @function showComment
+ * @param {Object} req HTTP request object
+ * @param {Object} res HTTP response object
+ * @description Show a comment by its id
+ */
+exports.showComment = function showComment(req, res) {
+  Post.findById(req.params.postId).exec()
+    .then(post => {
+      let commentId = mongoose.mongo.ObjectID(req.params.commentId);
+      let comment = _.find(post.comments, { _id: commentId })
+
+      if (!comment) return Promise.reject(new Error('The comment does not exist'));
+
+      res.json(comment);
+    })
+    .catch((err) => {
+      res
+        .status(404)
+        .json({ message: err.toString() });
+    });
+}
+
+/**
+ * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
+ * @function updateComment
+ * @param {Object} req HTTP request object
+ * @param {Object} res HTTP response object
+ * @description Update a comment by its id sent as a request param
+ */
+exports.updateComment = function updateComment(req, res) {
+  Post.findById(req.params.postId).exec()
+    .then(post => {
+      const findComment = comment => comment.id === req.params.commentId;
+      let comment = post.comments.find(findComment);
+      
+      if (!comment) return new Error('The comment does not exist');
+
+      // Update comment
+      comment.body = req.body.body || comment.body;
+      comment.userId = req.body.userId || comment.userId;
+
+      // Save the post the comment belongs to
+      post.save()
+        .then(post => {
+          let comment = post.comments.find(findComment);
+          res.json(comment);
+        })
+        .catch(err => {
+          res
+            .status(400)
+            .json({ message: err.toString() });
+        });
+    })
+    .catch((err) => {
+      res
+        .status(404)
+        .json({ message: err.toString() });
     });
 }

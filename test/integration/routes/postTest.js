@@ -151,3 +151,55 @@ describe('POSTS', function() {
     });
   });
 });
+
+describe('POSTS - COMMENTS', function() {
+  describe('GET comments (' + postResourcePath + '/:postId/comments)', function() {
+    it('retrieves a list of comments', function(done) {
+      var getComments = function getComments(done, error, res){
+        request(app)
+          .get(postResourcePath + '/' + res.body[0]._id + '/comments')
+          .auth('admin', 'admin')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .end((err) => {
+              if (err) throw new Error(err);
+              done();
+          });
+      };
+
+      // Get first post
+      request(app)
+        .get(postResourcePath)      
+        .auth('admin', 'admin')
+        .expect('Content-Type', /json/)
+        .end(getComments.bind(null, done))
+    });
+
+    it('retrieves a list of one comment when limit=1', function(done) {
+      var getComments = function getComments(done, error, res){
+        request(app)
+          .get(postResourcePath + '/' + res.body[0]._id + '/comments?limit=1&page=2')
+          .auth('admin', 'admin')
+          .set('Accept', 'application/json')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .expect((res) => {
+            res.body.should.be.an.Array();
+            res.body.length.should.be.equal(1);
+          })
+          .end((err) => {
+            if (err) throw err;
+            done();
+          });
+      };
+
+      // Get first post
+      request(app)
+        .get(postResourcePath)      
+        .auth('admin', 'admin')
+        .expect('Content-Type', /json/)
+        .end(getComments.bind(null, done))
+    });
+  });
+});
