@@ -150,6 +150,29 @@ describe('POSTS', function() {
         .end(updatePost.bind(null, done))
     });
   });
+
+  describe('DELETE posts (' + postResourcePath + '/:postId/comments)', function() {
+    it('delete a post', function(done) {
+      var deleteComment = function storeComment(done, error, res){
+        request(app)
+          .delete(postResourcePath + '/' + res.body[0]._id)
+          .auth('admin', 'admin')
+          .set('Accept', 'application/json')
+          .expect(204)
+          .end((err) => {
+              if (err) throw err;
+              done();
+          });
+      };
+
+      // Get first post
+      request(app)
+        .get(postResourcePath)      
+        .auth('admin', 'admin')
+        .expect('Content-Type', /json/)
+        .end(deleteComment.bind(null, done))
+    });
+  });
 });
 
 describe('POSTS - COMMENTS', function() {
@@ -237,6 +260,62 @@ describe('POSTS - COMMENTS', function() {
         .auth('admin', 'admin')
         .expect('Content-Type', /json/)
         .end(getComments.bind(null, done))
+    });
+  });
+
+  describe('PUT comments (' + postResourcePath + '/:postId/comments)', function() {
+    it('update a comment', function(done) {
+      var updateComment = function storeComment(done, error, res){
+        let comment = {
+          body: 'updated body'
+        };
+
+        request(app)
+          .put(postResourcePath + '/' + res.body[0]._id + '/comments/' + res.body[0].comments[0]._id)
+          .auth('admin', 'admin')
+          .set('Accept', 'application/json')
+          .send(comment)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .expect((res) => {
+            res.body.body.should.be.a.String();
+            res.body.body.should.be.equal(comment.body);
+          })
+          .end((err) => {
+              if (err) throw err;
+              done();
+          });
+      };
+
+      // Get first post
+      request(app)
+        .get(postResourcePath)      
+        .auth('admin', 'admin')
+        .expect('Content-Type', /json/)
+        .end(updateComment.bind(null, done))
+    });
+  });
+
+  describe('DELETE comments (' + postResourcePath + '/:postId/comments)', function() {
+    it('delete a comment', function(done) {
+      var deleteComment = function storeComment(done, error, res){
+        request(app)
+          .delete(postResourcePath + '/' + res.body[0]._id + '/comments/' + res.body[0].comments[0]._id)
+          .auth('admin', 'admin')
+          .set('Accept', 'application/json')
+          .expect(204)
+          .end((err) => {
+              if (err) throw err;
+              done();
+          });
+      };
+
+      // Get first post
+      request(app)
+        .get(postResourcePath)      
+        .auth('admin', 'admin')
+        .expect('Content-Type', /json/)
+        .end(deleteComment.bind(null, done))
     });
   });
 });

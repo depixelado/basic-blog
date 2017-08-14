@@ -105,7 +105,11 @@ exports.remove = function remove(req, res) {
   };
 
   Post.remove(queryObject)
-    .then(() => res.json({ message: 'Successfully deleted' }))
+    .then(() => {
+      res
+        .status(204)
+        .end();
+    })
     .catch(error => {
       res
         .status(400)
@@ -217,6 +221,43 @@ exports.updateComment = function updateComment(req, res) {
         });
     })
     .catch((err) => {
+      res
+        .status(404)
+        .json({ message: err.toString() });
+    });
+}
+
+/**
+ * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
+ * @function removeComment
+ * @param {Object} req HTTP request object
+ * @param {Object} res HTTP response object
+ * @description Remove a post by its id sent as a request param
+ */
+exports.removeComment = function removeComment(req, res) {
+  Post.findById(req.params.postId).exec()
+    .then(post => {
+      const findComment = comment => comment.id === req.params.commentId;
+      let commentIndex = post.comments.findIndex(findComment);
+      
+      if (commentIndex === -1) throw new Error('The comment does not exist');
+      
+      // Delete comment from post comment list
+      post.comments.splice(commentIndex, 1);
+      
+      // Persist changes
+      post.save()
+      .then(post => {  
+        res.status(204);
+        res.end();
+      })
+      .catch(err => {
+        res
+          .status(400)
+          .json({ message: err.toString() });
+      });
+    })
+    .catch((err) => {      
       res
         .status(404)
         .json({ message: err.toString() });

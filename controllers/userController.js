@@ -98,7 +98,11 @@ exports.remove = function remove(req, res) {
   };
 
   User.remove(queryObject)
-    .then(() => res.json({ message: 'Successfully deleted' }))
+    .then(() => {
+      res
+        .status(204)
+        .end();
+    })
     .catch(error => {
       res
         .status(400)

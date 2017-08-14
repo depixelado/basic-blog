@@ -33,4 +33,7 @@ router.route('/:postId/comments').post(postController.commentStore);
 /* PUT request to update a Comment */
 router.route('/:postId/comments/:commentId').put(postController.updateComment);
 
+/* DELETE request to delete a Post */
+router.route('/:postId/comments/:commentId').delete(postController.removeComment);
+
 module.exports = router;

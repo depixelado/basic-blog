@@ -139,4 +139,27 @@ describe('USERS', function() {
         .end(updatePost.bind(null, done))
     });
   });
+
+  describe('DELETE users (' + userResourcePath + '/:postId/users)', function() {
+    it('delete a comment', function(done) {
+      var deleteComment = function storeComment(done, error, res){
+        request(app)
+          .delete(userResourcePath + '/' + res.body[0]._id)
+          .auth('admin', 'admin')
+          .set('Accept', 'application/json')
+          .expect(204)
+          .end((err) => {
+              if (err) throw err;
+              done();
+          });
+      };
+
+      // Get first post
+      request(app)
+        .get(userResourcePath)      
+        .auth('admin', 'admin')
+        .expect('Content-Type', /json/)
+        .end(deleteComment.bind(null, done))
+    });
+  });
 });
