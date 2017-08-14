@@ -16,7 +16,6 @@
   "author": "depixelado",
   "license": "ISC",
   "dependencies": {
-    "appBootstrap": "./appBootstrap",
     "bcrypt-nodejs": "0.0.3",
     "body-parser": "^1.17.2",
     "dotenv": "^4.0.0",
