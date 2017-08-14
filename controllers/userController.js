@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const HttpStatus = require('http-status-codes');
 const User = require('./../models/User');
 const utils = require('./../utils');
 require('mongoose-pagination');
@@ -21,7 +22,7 @@ exports.store = function store(req, res) {
     .then((doc) => res.json(user))
     .catch(err => {
       res
-        .status(400)
+        .status(HttpStatus.NOT_FOUND)
         .json({ message: err });
     });
 }
@@ -40,7 +41,7 @@ exports.list = function list(req, res) {
     .then(users => res.json(users))
     .catch(err => {
       res
-        .status(400)
+        .status(HttpStatus.NOT_FOUND)
         .json({ message: err });
     });
 }
@@ -57,7 +58,7 @@ exports.show = function show(req, res) {
     .then(user => res.json(user))
     .catch((err) => {
       res
-        .status(404)
+        .status(HttpStatus.NOT_FOUND)
         .json({ message: err });
     });
 }
@@ -80,7 +81,7 @@ exports.update = function updateUser(req, res) {
     .then(user => res.json(user))
     .catch(error => {
       res
-        .status(404)
+        .status(HttpStatus.NOT_FOUND)
         .json({ message: err });
     });
 }
@@ -100,12 +101,12 @@ exports.remove = function remove(req, res) {
   User.remove(queryObject)
     .then(() => {
       res
-        .status(204)
+        .status(HttpStatus.NO_CONTENT)
         .end();
     })
     .catch(error => {
       res
-        .status(400)
+        .status(HttpStatus.NOT_FOUND)
         .json({ message: 'Error: Unable to delete the resource' });
     });
 }

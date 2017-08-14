@@ -1,9 +1,10 @@
 require('mongoose-pagination');
 
 const _ = require('lodash');
-const utils = require('./../utils');
-const Post = require('./../models/Post');
+const HttpStatus = require('http-status-codes');
 const mongoose = require('mongoose');
+const Post = require('./../models/Post');
+const utils = require('./../utils');
 
 /**
  * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
@@ -26,7 +27,7 @@ exports.store = function store(req, res) {
     .then(post => res.json(post))
     .catch(err => {
       res
-        .status(400)
+        .status(HttpStatus.BAD_REQUEST)
         .json({ message: err });
     });
 }
@@ -45,7 +46,7 @@ exports.list = function list(req, res) {
     .then(posts => res.json(posts))
     .catch(err => {
       res
-        .status(400)
+        .status(HttpStatus.BAD_REQUEST)
         .json({ message: err });
     });
 }
@@ -62,7 +63,7 @@ exports.show = function show(req, res) {
     .then(post => res.json(post))
     .catch((err) => {
       res
-        .status(404)
+        .status(HttpStatus.NOT_FOUND)
         .json({ message: err });
     });
 }
@@ -87,7 +88,7 @@ exports.update = function updatePost(req, res) {
     .then(post => res.json(post))
     .catch(error => {
       res
-        .status(404)
+        .status(HttpStatus.NOT_FOUND)
         .json({ message: error });
     });
 }
@@ -107,12 +108,12 @@ exports.remove = function remove(req, res) {
   Post.remove(queryObject)
     .then(() => {
       res
-        .status(204)
+        .status(HttpStatus.NO_CONTENT)
         .end();
     })
     .catch(error => {
       res
-        .status(400)
+        .status(HttpStatus.BAD_REQUEST)
         .json({ message: 'Error: Unable to delete the resource' });
     });
 }
@@ -135,7 +136,7 @@ exports.commentList = function commentList(req, res) {
     })
     .catch((err) => {
       res
-        .status(404)
+        .status(HttpStatus.NOT_FOUND)
         .json({ message: err });
     });
 };
@@ -160,7 +161,7 @@ exports.commentStore = function commentStore(req, res) {
     .then(post => res.json(post.comments[0]))
     .catch(error => {
       res
-        .status(404)
+        .status(HttpStatus.NOT_FOUND)
         .json({ message: error });
     });
 };
@@ -184,7 +185,7 @@ exports.showComment = function showComment(req, res) {
     })
     .catch((err) => {
       res
-        .status(404)
+        .status(HttpStatus.NOT_FOUND)
         .json({ message: err.toString() });
     });
 }
@@ -216,13 +217,13 @@ exports.updateComment = function updateComment(req, res) {
         })
         .catch(err => {
           res
-            .status(400)
+            .status(HttpStatus.BAD_REQUEST)
             .json({ message: err.toString() });
         });
     })
     .catch((err) => {
       res
-        .status(404)
+        .status(HttpStatus.NOT_FOUND)
         .json({ message: err.toString() });
     });
 }
@@ -248,18 +249,18 @@ exports.removeComment = function removeComment(req, res) {
       // Persist changes
       post.save()
       .then(post => {  
-        res.status(204);
+        res.status(HttpStatus.NO_CONTENT);
         res.end();
       })
       .catch(err => {
         res
-          .status(400)
+          .status(HttpStatus.BAD_REQUEST)
           .json({ message: err.toString() });
       });
     })
     .catch((err) => {      
       res
-        .status(404)
+        .status(HttpStatus.NOT_FOUND)
         .json({ message: err.toString() });
     });
 }
