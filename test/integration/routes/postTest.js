@@ -153,6 +153,41 @@ describe('POSTS', function() {
 });
 
 describe('POSTS - COMMENTS', function() {
+  describe('POST comments (' + postResourcePath + '/:postId/comments)', function() {
+    it('store a new comment', function(done) {
+      var storeComment = function storeComment(done, error, res){
+        let comment = {
+          body: 'Comment body test'
+        };
+
+        request(app)
+          .post(postResourcePath + '/' + res.body[0]._id + '/comments')
+          .auth('admin', 'admin')
+          .set('Accept', 'application/json')
+          .send(comment)
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .expect((res) => {
+            res.body.body.should.be.a.String();
+            res.body.body.should.be.equal(comment.body);
+            res.body.createdAt.should.be.a.String();
+            res.body.updatedAt.should.be.a.String();
+          })
+          .end((err) => {
+              if (err) throw err;
+              done();
+          });
+      };
+
+      // Get first post
+      request(app)
+        .get(postResourcePath)      
+        .auth('admin', 'admin')
+        .expect('Content-Type', /json/)
+        .end(storeComment.bind(null, done))
+    });
+  });
+
   describe('GET comments (' + postResourcePath + '/:postId/comments)', function() {
     it('retrieves a list of comments', function(done) {
       var getComments = function getComments(done, error, res){
@@ -195,6 +230,8 @@ describe('POSTS - COMMENTS', function() {
       };
 
       // Get first post
+      // TODO: Query a post with comments. 
+      // It assummes now post has comment but it could not. Some times it makes not pass the test
       request(app)
         .get(postResourcePath)      
         .auth('admin', 'admin')
