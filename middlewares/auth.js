@@ -11,7 +11,7 @@ var User = require('../models/User');
  * @param {Function} callback Function to be executed either the authentication is valid or not
  */
 function basicAuthentication(username, password, callback) {
-  User.findOne({ username: username }, function (err, user) {
+  User.findOne({ _id: username }, function (err, user) {
     if (err) { return callback(err); }
 
     // No user found with that username

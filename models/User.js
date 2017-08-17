@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt-nodejs');
 
 // Define User Schema
 const UserSchema = mongoose.Schema({
-  username: {
+  _id: {
     type: String,
     unique: true,
     required: true
@@ -15,6 +15,12 @@ const UserSchema = mongoose.Schema({
   createdAt: Date,
   updatedAt: Date
 });
+
+UserSchema.virtual('username')
+  .get(function() { return this._id; })
+  .set(function(username) {
+    this._id = username;
+  });
 
 /* METHODS */
 
