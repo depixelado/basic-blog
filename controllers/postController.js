@@ -24,7 +24,7 @@ exports.store = function store(req, res) {
   });
 
   post.save()
-    .then(post => res.json(post))
+    .then(post => res.json({ data: post }))
     .catch(err => {
       res
         .status(HttpStatus.BAD_REQUEST)
@@ -43,7 +43,7 @@ exports.list = function list(req, res) {
   Post.find()
     .paginate(req.query.page, req.query.limit)
     .exec()
-    .then(posts => res.json(posts))
+    .then(posts => res.json({ data: posts }))
     .catch(err => {
       res
         .status(HttpStatus.BAD_REQUEST)
@@ -60,7 +60,7 @@ exports.list = function list(req, res) {
  */
 exports.show = function show(req, res) {
   Post.findById(req.params.postId).exec()
-    .then(post => res.json(post))
+    .then(post => res.json({ data: post }))
     .catch((err) => {
       res
         .status(HttpStatus.NOT_FOUND)
@@ -85,7 +85,7 @@ exports.update = function updatePost(req, res) {
 
       return post.save()
     })
-    .then(post => res.json(post))
+    .then(post => res.json({ data: post }))
     .catch(error => {
       res
         .status(HttpStatus.NOT_FOUND)
@@ -132,7 +132,7 @@ exports.commentList = function commentList(req, res) {
 
   Post.findById(req.params.postId).exec()
     .then(post => {
-      res.json(post.comments.slice(sliceStart, sliceEnd))
+      res.json({ data: post.comments.slice(sliceStart, sliceEnd) })
     })
     .catch((err) => {
       res
@@ -158,7 +158,7 @@ exports.commentStore = function commentStore(req, res) {
 
       return post.save()
     })
-    .then(post => res.json(post.comments[0]))
+    .then(post => res.json({ data: post.comments[0] }))
     .catch(error => {
       res
         .status(HttpStatus.NOT_FOUND)
@@ -181,7 +181,7 @@ exports.showComment = function showComment(req, res) {
 
       if (!comment) return Promise.reject(new Error('The comment does not exist'));
 
-      res.json(comment);
+      res.json({ data: comment });
     })
     .catch((err) => {
       res
@@ -213,7 +213,7 @@ exports.updateComment = function updateComment(req, res) {
       post.save()
         .then(post => {
           let comment = post.comments.find(findComment);
-          res.json(comment);
+          res.json({ data: comment });
         })
         .catch(err => {
           res

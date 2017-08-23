@@ -19,7 +19,7 @@ exports.store = function store(req, res) {
   });
 
   user.save()
-    .then((doc) => res.json(user))
+    .then((doc) => res.json({ data: user }))
     .catch(err => {
       res
         .status(HttpStatus.NOT_FOUND)
@@ -38,7 +38,7 @@ exports.list = function list(req, res) {
   User.find()
     .paginate(req.query.page, req.query.limit)
     .exec()
-    .then(users => res.json(users))
+    .then(users => res.json({ data: users }))
     .catch(err => {
       res
         .status(HttpStatus.NOT_FOUND)
@@ -55,7 +55,15 @@ exports.list = function list(req, res) {
  */
 exports.show = function show(req, res) {
   User.findById(req.params.userId).exec()
-    .then(user => res.json(user))
+    .then(user => {
+      if (user === null) {
+        res
+        .status(HttpStatus.NOT_FOUND)
+        .end();
+      }
+
+      res.json({ data: user });
+    })
     .catch((err) => {
       res
         .status(HttpStatus.NOT_FOUND)
@@ -78,7 +86,7 @@ exports.update = function updateUser(req, res) {
 
       return user.save()
     })
-    .then(user => res.json(user))
+    .then(user => res.json({ data: user }))
     .catch(error => {
       res
         .status(HttpStatus.NOT_FOUND)

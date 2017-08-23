@@ -60,8 +60,8 @@ describe('POSTS', function() {
         .set('Accept', 'application/json')
         .expect(200, done)
         .expect(function checkThereIsAnArrayOfElements(res) {
-          res.body.should.be.Array;
-          res.body.length.should.equal(1);
+          res.body.data.should.be.Array;
+          res.body.data.length.should.equal(1);
         });
     });
   });
@@ -83,7 +83,7 @@ describe('POSTS', function() {
 
       var checkPost = function checkPost(done, error, res) {
         request(app)
-          .get(postResourcePath + '/' + res.body._id)
+          .get(postResourcePath + '/' + res.body.data._id)
           .auth('admin', 'admin')
           .expect('Content-Type', /json/)
           .expect(200)
@@ -129,7 +129,7 @@ describe('POSTS', function() {
         }
         
         request(app)
-          .put(postResourcePath + '/' + res.body[0]._id)
+          .put(postResourcePath + '/' + res.body.data[0]._id)
           .auth('admin', 'admin')
           .set('Accept', 'application/json')
           .send(post)
@@ -155,7 +155,7 @@ describe('POSTS', function() {
     it('delete a post', function(done) {
       var deleteComment = function storeComment(done, error, res){
         request(app)
-          .delete(postResourcePath + '/' + res.body[0]._id)
+          .delete(postResourcePath + '/' + res.body.data[0]._id)
           .auth('admin', 'admin')
           .set('Accept', 'application/json')
           .expect(204)
@@ -184,17 +184,17 @@ describe('POSTS - COMMENTS', function() {
         };
 
         request(app)
-          .post(postResourcePath + '/' + res.body[0]._id + '/comments')
+          .post(postResourcePath + '/' + res.body.data[0]._id + '/comments')
           .auth('admin', 'admin')
           .set('Accept', 'application/json')
           .send(comment)
           .expect('Content-Type', /json/)
           .expect(200)
           .expect((res) => {
-            res.body.body.should.be.a.String();
-            res.body.body.should.be.equal(comment.body);
-            res.body.createdAt.should.be.a.String();
-            res.body.updatedAt.should.be.a.String();
+            res.body.data.body.should.be.a.String();
+            res.body.data.body.should.be.equal(comment.body);
+            res.body.data.createdAt.should.be.a.String();
+            res.body.data.updatedAt.should.be.a.String();
           })
           .end((err) => {
               if (err) throw err;
@@ -215,7 +215,7 @@ describe('POSTS - COMMENTS', function() {
     it('retrieves a list of comments', function(done) {
       var getComments = function getComments(done, error, res){
         request(app)
-          .get(postResourcePath + '/' + res.body[0]._id + '/comments')
+          .get(postResourcePath + '/' + res.body.data[0]._id + '/comments')
           .auth('admin', 'admin')
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
@@ -237,14 +237,14 @@ describe('POSTS - COMMENTS', function() {
     it('retrieves a list of one comment when limit=1', function(done) {
       var getComments = function getComments(done, error, res){
         request(app)
-          .get(postResourcePath + '/' + res.body[0]._id + '/comments?limit=1&page=2')
+          .get(postResourcePath + '/' + res.body.data[0]._id + '/comments?limit=1&page=2')
           .auth('admin', 'admin')
           .set('Accept', 'application/json')
           .expect('Content-Type', /json/)
           .expect(200)
           .expect((res) => {
-            res.body.should.be.an.Array();
-            res.body.length.should.be.equal(1);
+            res.body.data.should.be.an.Array();
+            res.body.data.length.should.be.equal(1);
           })
           .end((err) => {
             if (err) throw err;
@@ -271,15 +271,15 @@ describe('POSTS - COMMENTS', function() {
         };
 
         request(app)
-          .put(postResourcePath + '/' + res.body[0]._id + '/comments/' + res.body[0].comments[0]._id)
+          .put(postResourcePath + '/' + res.body.data[0]._id + '/comments/' + res.body.data[0].comments[0]._id)
           .auth('admin', 'admin')
           .set('Accept', 'application/json')
           .send(comment)
           .expect('Content-Type', /json/)
           .expect(200)
           .expect((res) => {
-            res.body.body.should.be.a.String();
-            res.body.body.should.be.equal(comment.body);
+            res.body.data.body.should.be.a.String();
+            res.body.data.body.should.be.equal(comment.body);
           })
           .end((err) => {
               if (err) throw err;
@@ -300,7 +300,7 @@ describe('POSTS - COMMENTS', function() {
     it('delete a comment', function(done) {
       var deleteComment = function storeComment(done, error, res){
         request(app)
-          .delete(postResourcePath + '/' + res.body[0]._id + '/comments/' + res.body[0].comments[0]._id)
+          .delete(postResourcePath + '/' + res.body.data[0]._id + '/comments/' + res.body.data[0].comments[0]._id)
           .auth('admin', 'admin')
           .set('Accept', 'application/json')
           .expect(204)

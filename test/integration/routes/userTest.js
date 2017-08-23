@@ -13,12 +13,12 @@ describe('USERS', function() {
       { 
         description: 'creates an User and return it as it was saved',
         user: { username : 'user1', password: '1234' }, 
-        expected: {username: 'user1'}
+        expected: {_id: 'user1'}
       },
       { 
         description: 'creates an User casting the values',
         user: { username : 3, password : 4}, 
-        expected: { username : '3'}
+        expected: { _id : '3'}
       }
     ];
 
@@ -45,7 +45,7 @@ describe('USERS', function() {
         .expect('Content-Type', /json/)
         .expect(200, done)
         .expect(function checkThereIsAnArrayOfElements(res) {
-          res.body.should.be.Array;
+          res.body.data.should.be.Array;
         });
     });
 
@@ -57,8 +57,8 @@ describe('USERS', function() {
         .set('Accept', 'application/json')
         .expect(200, done)
         .expect(function checkThereIsAnArrayOfElements(res) {
-          res.body.should.be.Array;
-          res.body.length.should.equal(1);
+          res.body.data.should.be.Array;
+          res.body.data.length.should.equal(1);
         });
     });
   });
@@ -71,12 +71,12 @@ describe('USERS', function() {
       };
 
       var expectedResult = {
-        username: 'new-name',
+        _id: 'new-name',
       };
 
       var checkUser = function checkPost(done, error, res) {
         request(app)
-          .get(userResourcePath + '/' + res.body._id)
+          .get(userResourcePath + '/' + res.body.data._id)
           .auth('admin', 'admin')
           .expect('Content-Type', /json/)
           .expect(200)
@@ -100,7 +100,6 @@ describe('USERS', function() {
       request(app)
         .get(userResourcePath + '/random')
         .auth('admin', 'admin')
-        .expect('Content-Type', /json/)
         .expect(404, done)
     });
   });
@@ -114,11 +113,11 @@ describe('USERS', function() {
         };
 
         let expectedResult = {
-          username: 'new-name',
+          _id: 'new-name',
         }
         
         request(app)
-          .put(userResourcePath + '/' + res.body[0]._id)
+          .put(userResourcePath + '/' + res.body.data[0]._id)
           .auth('admin', 'admin')
           .set('Accept', 'application/json')
           .send(user)
@@ -144,7 +143,7 @@ describe('USERS', function() {
     it('delete a comment', function(done) {
       var deleteComment = function storeComment(done, error, res){
         request(app)
-          .delete(userResourcePath + '/' + res.body[0]._id)
+          .delete(userResourcePath + '/' + res.body.data[0]._id)
           .auth('admin', 'admin')
           .set('Accept', 'application/json')
           .expect(204)
