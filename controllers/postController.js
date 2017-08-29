@@ -40,15 +40,25 @@ exports.store = function store(req, res) {
  * @description Show all posts on the database
  */
 exports.list = function list(req, res) {
-  Post.find()
-    .paginate(req.query.page, req.query.limit)
-    .exec()
-    .then(posts => res.json({ data: posts }))
-    .catch(err => {
-      res
-        .status(HttpStatus.BAD_REQUEST)
-        .json({ message: err });
-    });
+  // Get total posts number
+  Post.count().then((totalPosts) => {
+    Post.find()
+      .paginate(req.query.page, req.query.limit)
+      .exec()
+      .then(posts => res.json({
+        pagination: {
+          itemsPerPage: req.query.limit,
+          page: req.query.page,
+          totalItems: totalPosts
+        },
+        data: posts 
+      }))
+      .catch(err => {
+        res
+          .status(HttpStatus.BAD_REQUEST)
+          .json({ message: err });
+      });
+  });
 }
 
 /**
