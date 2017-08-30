@@ -6,7 +6,7 @@ const utils = {
    * @return {String} Slugified text
    * @description Slugify a text
    */
-  slugify : function slugify(text = "") {
+  slugify: function slugify(text = "") {
     return text.toString().toLowerCase()
       .replace(/\s+/g, '-')           // Replace spaces with -
       .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
@@ -22,7 +22,7 @@ const utils = {
    * @return {Array} Returns an array of tags
    * @description Convert a string of comma separated tags on a tags array
    */
-  string2TagsArray : function string2TagsArray(tagString = "") {
+  string2TagsArray: function string2TagsArray(tagString = "") {
     return tagString.split(",").map(x => x.trim());
   },
 
@@ -33,7 +33,7 @@ const utils = {
    * @return {Number} Returns a sanatized page number
    * @description Get an unknown formated page and sanatize it
    */
-  sanatizePage : function sanatiezePage(page = 1) {
+  sanatizePage: function sanatiezePage(page = 1) {
     if (!/^[1-9][0-9]*$/.test(page)) page = 1;
 
     return page;
@@ -48,7 +48,7 @@ const utils = {
    * @return {Number} Returns a sanatized page limit
    * @description Sanatize max element per page number
    */
-  sanatizeLimitPerPage : function sanatizeLimitPerPage(limit = 10, minLimit = 1, maxLimit = 100) {
+  sanatizeLimitPerPage: function sanatizeLimitPerPage(limit = 10, minLimit = 1, maxLimit = 100) {
     var limitPerPage = Number(limit);
 
     // Test if limitPerPage is a valid number
@@ -59,6 +59,34 @@ const utils = {
     if (limitPerPage > maxLimit ) limitPerPage = maxLimit;
 
     return limitPerPage;
+  },
+
+  /**
+   * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
+   * @function getRequiredFieldsMap
+   * @param {Object} req Request object
+   * @param {Array} hiddenApiFields Fields that are not allowed to be displayed
+   * @param {String} belongsTo Namespace the fields belongs to. i.e belongsTo = comment => comment.body
+   * @return {Object} Required fields map
+   * @description Build a required fields map to be displayed on the API. 
+   * Supports nested fields by adding a point. i.e comment.body
+   */
+  getRequiredFieldsMap: function getRequiredFieldsMap(req, hiddenApiFields = [], belongsTo = false) {
+    return req.query.fields
+      // Add namespace to the required fiels
+      .map(field => (belongsTo) ? `${belongsTo}.${field}` : field)
+      
+      // Not include hidden API fields
+      .filter(field => hiddenApiFields.indexOf(field) === -1)
+
+      // Map fields
+      .reduce(
+        (accumulator, value) => {
+          accumulator[value] = 1;
+          return accumulator;
+         },
+        {} 
+      );
   }
 };
 

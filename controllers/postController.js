@@ -6,6 +6,8 @@ const mongoose = require('mongoose');
 const Post = require('./../models/Post');
 const utils = require('./../utils');
 
+const postHiddenApiFields = ['__v'];
+
 /**
  * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
  * @function store
@@ -40,9 +42,12 @@ exports.store = function store(req, res) {
  * @description Show all posts on the database
  */
 exports.list = function list(req, res) {
+  // Get required fields
+  const fieldsMap = utils.getRequiredFieldsMap(req, postHiddenApiFields);
+
   // Get total posts number
   Post.count().then((totalPosts) => {
-    Post.find()
+    Post.find(null, fieldsMap)
       .paginate(req.query.page, req.query.limit)
       .exec()
       .then(posts => res.json({
@@ -69,7 +74,10 @@ exports.list = function list(req, res) {
  * @description Show a post by its id sent as a request param
  */
 exports.show = function show(req, res) {
-  Post.findById(req.params.postId).exec()
+  // Get required fields
+  const fieldsMap = utils.getRequiredFieldsMap(req, postHiddenApiFields);
+
+  Post.findById(req.params.postId, fieldsMap).exec()
     .then(post => res.json({ data: post }))
     .catch((err) => {
       res
@@ -140,7 +148,10 @@ exports.commentList = function commentList(req, res) {
   let sliceStart = req.query.page * req.query.limit - req.query.limit;
   let sliceEnd = sliceStart + req.query.limit;
 
-  Post.findById(req.params.postId).exec()
+  // Get required fields
+  const fieldsMap = utils.getRequiredFieldsMap(req, [], 'comments');
+
+  Post.findById(req.params.postId, fieldsMap).exec()
     .then(post => {
       res.json({ data: post.comments.slice(sliceStart, sliceEnd) })
     })
@@ -184,10 +195,23 @@ exports.commentStore = function commentStore(req, res) {
  * @description Show a comment by its id
  */
 exports.showComment = function showComment(req, res) {
+  // Get required fields
+  const commentRequiredFields = Object.keys(utils.getRequiredFieldsMap(req, []))
+
   Post.findById(req.params.postId).exec()
     .then(post => {
       let commentId = mongoose.mongo.ObjectID(req.params.commentId);
-      let comment = _.find(post.comments, { _id: commentId })
+      let comment = _.find(post.comments, { _id: commentId });
+
+      if (commentRequiredFields.length > 0) {
+        // Add also the ID to the required fields
+        commentRequiredFields.push('_id')
+
+        comment = _.pick(
+          comment, 
+          commentRequiredFields
+        );
+      }
 
       if (!comment) return Promise.reject(new Error('The comment does not exist'));
 

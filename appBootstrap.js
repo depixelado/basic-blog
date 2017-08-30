@@ -14,6 +14,8 @@ var app = express();
 
 // Configure app to use body parser
 app.use(helmet());
+
+// Body parsers
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
