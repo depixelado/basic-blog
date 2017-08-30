@@ -143,7 +143,14 @@ exports.remove = function remove(req, res) {
     });
 }
 
-const getLodashSortByOrder = function getLodashSortByOrder(sortMap) {
+/**
+ * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
+ * @function getSortOrderPerField
+ * @param {Object} sortMap Sort map
+ * @return {Array} List of order direcction (asc or desc) for the provided keys
+ * @description Build a list of sort directions based on the sortMap provided
+ */
+const getSortOrderPerField = function getSortOrderPerField(sortMap) {
   return Object.keys(sortMap)
     .map(value => (sortMap[value] === 1) ? 'asc' : 'desc')
 }
@@ -172,7 +179,7 @@ exports.commentList = function commentList(req, res) {
       let comments = _.orderBy(
         post.comments, 
         Object.keys(sortMap),
-        getLodashSortByOrder(sortMap)
+        getSortOrderPerField(sortMap)
       );
 
       // Pick only the required fields
