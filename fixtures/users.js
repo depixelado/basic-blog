@@ -17,14 +17,18 @@ function generateUsers(quantity) {
 
   users.push(new User({
     username: 'admin',
-    password: 'admin'
+    password: 'admin',
+    description: faker.lorem.paragraphs(2),
+    email: faker.internet.email(),
   }));
 
   for(let i = 0; i < quantity; i++) {
     users.push(
       new User({
         username: faker.internet.userName(),
-        password: '123456'
+        password: '123456',
+        description: faker.lorem.paragraphs(2),
+        email: faker.internet.email(),
       })
     );
   }

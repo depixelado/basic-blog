@@ -12,6 +12,8 @@ const UserSchema = mongoose.Schema({
     type: String,
     required: true
   },
+  description: String,
+  email: String, 
   createdAt: Date,
   updatedAt: Date
 });
