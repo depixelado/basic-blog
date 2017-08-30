@@ -98,6 +98,28 @@ const utils = {
          },
         {} 
       );
+  },
+
+  /**
+   * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
+   * @function getResourceSortMap
+   * @param {Object} req Request object
+   * @return {Object} Default sorting map
+   * @description Build a sorting fields map
+   */
+  getResourceSortMap: function getResourceSortMap(req, defaultSortingMap = {}) {
+    if (req.query.sort.length === 0) return defaultSortingMap;
+  
+    return req.query.sort.reduce(
+      (accumulator, value) => {
+        const key = value.replace(/^-/, '');
+        const direction = (value.charAt(0) === '-') ? -1 : 1;
+  
+        accumulator[key] = direction;
+        return accumulator;
+      },
+      {}
+    )
   }
 };
 

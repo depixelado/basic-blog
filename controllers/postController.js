@@ -7,6 +7,9 @@ const Post = require('./../models/Post');
 const utils = require('./../utils');
 
 const postHiddenApiFields = ['__v'];
+const postDefaultSortingMap = {
+  updateAt: -1
+};
 
 /**
  * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
@@ -44,10 +47,14 @@ exports.store = function store(req, res) {
 exports.list = function list(req, res) {
   // Get required fields
   const fieldsMap = utils.getRequiredFieldsMap(req, postHiddenApiFields);
+  
+  // Get sorting fields
+  const sortMap = utils.getResourceSortMap(req, postDefaultSortingMap);
 
   // Get total posts number
   Post.count().then((totalPosts) => {
     Post.find(null, fieldsMap)
+      .sort(sortMap)
       .paginate(req.query.page, req.query.limit)
       .exec()
       .then(posts => res.json({
@@ -136,6 +143,11 @@ exports.remove = function remove(req, res) {
     });
 }
 
+const getLodashSortByOrder = function getLodashSortByOrder(sortMap) {
+  return Object.keys(sortMap)
+    .map(value => (sortMap[value] === 1) ? 'asc' : 'desc')
+}
+
 /**
  * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
  * @function commentList
@@ -145,15 +157,31 @@ exports.remove = function remove(req, res) {
  */
 exports.commentList = function commentList(req, res) {
   // Pagination for comments
-  let sliceStart = req.query.page * req.query.limit - req.query.limit;
-  let sliceEnd = sliceStart + req.query.limit;
+  const sliceStart = req.query.page * req.query.limit - req.query.limit;
+  const sliceEnd = sliceStart + req.query.limit;
 
   // Get required fields
-  const fieldsMap = utils.getRequiredFieldsMap(req, [], 'comments');
+  const commentRequiredFields = Object.keys(utils.getRequiredFieldsMap(req, []))
 
-  Post.findById(req.params.postId, fieldsMap).exec()
+  // Get sorting fields
+  const sortMap = utils.getResourceSortMap(req, postDefaultSortingMap);
+
+  Post.findById(req.params.postId).exec()
     .then(post => {
-      res.json({ data: post.comments.slice(sliceStart, sliceEnd) })
+      // Sort comments
+      let comments = _.orderBy(
+        post.comments, 
+        Object.keys(sortMap),
+        getLodashSortByOrder(sortMap)
+      );
+
+      // Pick only the required fields
+      comments = comments.map(comment => _.pick(
+        comment, 
+        commentRequiredFields
+      ));
+
+      res.json({ data: comments.slice(sliceStart, sliceEnd) })
     })
     .catch((err) => {
       res

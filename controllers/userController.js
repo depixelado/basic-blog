@@ -6,6 +6,9 @@ const User = require('./../models/User');
 const utils = require('./../utils');
 
 const userHiddenApiFields = ['__v', 'password'];
+const userDefaultSortingMap = {
+  updateAt: -1
+};
 
 /**
  * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
@@ -41,7 +44,11 @@ exports.list = function list(req, res) {
   // Get required fields
   const fieldsMap = utils.getRequiredFieldsMap(req, userHiddenApiFields);
 
+  // Get sorting fields
+  const sortMap = utils.getResourceSortMap(req, userDefaultSortingMap);
+
   User.find(null, fieldsMap)
+    .sort(sortMap)
     .paginate(req.query.page, req.query.limit)
     .exec()
     .then(users => res.json({ data: users }))

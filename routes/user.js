@@ -2,11 +2,17 @@ const express = require('express');
 const pagination = require('./../middlewares/pagination');
 const requiredFields = require('./../middlewares/requiredFields');
 const userController = require('./../controllers/userController');
+const sortingFields = require('./../middlewares/sortingFields');
 
 const router = express.Router();
 
 /* GET request to show all Users. */
-router.route('/').get(pagination, requiredFields, userController.list);
+router.route('/').get(
+  pagination,
+  requiredFields,
+  sortingFields,
+  userController.list
+);
 
 /* POST request to create a User */
 router.route('/').post(userController.store);
