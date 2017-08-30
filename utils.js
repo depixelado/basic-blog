@@ -72,6 +72,17 @@ const utils = {
    * Supports nested fields by adding a point. i.e comment.body
    */
   getRequiredFieldsMap: function getRequiredFieldsMap(req, hiddenApiFields = [], belongsTo = false) {
+    if (req.query.fields.length === 0) {
+      return hiddenApiFields
+        .reduce(
+          (accumulator, value) => {
+            accumulator[value] = 0;
+            return accumulator;
+           },
+          {} 
+        );
+    }
+
     return req.query.fields
       // Add namespace to the required fiels
       .map(field => (belongsTo) ? `${belongsTo}.${field}` : field)

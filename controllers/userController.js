@@ -1,8 +1,11 @@
+require('mongoose-pagination');
 const _ = require('lodash');
 const HttpStatus = require('http-status-codes');
+
 const User = require('./../models/User');
 const utils = require('./../utils');
-require('mongoose-pagination');
+
+const userHiddenApiFields = ['__v', 'password'];
 
 /**
  * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
@@ -35,7 +38,10 @@ exports.store = function store(req, res) {
  * @description Show all users on the database
  */
 exports.list = function list(req, res) {
-  User.find()
+  // Get required fields
+  const fieldsMap = utils.getRequiredFieldsMap(req, userHiddenApiFields);
+
+  User.find(null, fieldsMap)
     .paginate(req.query.page, req.query.limit)
     .exec()
     .then(users => res.json({ data: users }))
@@ -54,7 +60,10 @@ exports.list = function list(req, res) {
  * @description Show a user by its id sent as a request param
  */
 exports.show = function show(req, res) {
-  User.findById(req.params.userId).exec()
+  // Get required fields
+  const fieldsMap = utils.getRequiredFieldsMap(req, userHiddenApiFields);
+
+  User.findById(req.params.userId, fieldsMap).exec()
     .then(user => {
       if (user === null) {
         res
