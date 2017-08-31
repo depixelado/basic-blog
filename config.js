@@ -11,6 +11,7 @@ const config = {
     name : process.env.DB_NAME
   },
   app: {
+    host : process.env.HOST || 'localhost',
     port : process.env.PORT || 3000,
 
     // Pagination

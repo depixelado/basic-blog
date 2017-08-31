@@ -1,6 +1,9 @@
 const faker = require('faker');
 const User = require('../models/User');
 const utils = require('../utils.js');
+const fs = require('fs');
+
+const config = require('../config.js');
 
 // CONFIG
 const NUM_OF_USERS = 20;
@@ -20,20 +23,37 @@ function generateUsers(quantity) {
     password: 'admin',
     description: faker.lorem.paragraphs(2),
     email: faker.internet.email(),
+    avatar: generateAvatar('admin')
   }));
 
   for(let i = 0; i < quantity; i++) {
+    const username = faker.internet.userName();
+    const avatarAbsoluteUrl = 
+
     users.push(
       new User({
-        username: faker.internet.userName(),
+        username,
         password: '123456',
         description: faker.lorem.paragraphs(2),
         email: faker.internet.email(),
+        avatar: generateAvatar(username),
       })
     );
   }
 
   return users;
+}
+
+function generateAvatar(userId) {
+  const randomNumber = Math.floor(Math.random() * 5 + 1);
+  const avatarName = `avatar${randomNumber}.jpg`;
+  const avatarPath = `fixtures/assets/img/profiles/${avatarName}`;
+  const newAvatarName = `${userId}.jpg`;
+
+  fs.createReadStream(avatarPath)
+    .pipe(fs.createWriteStream(`public/avatars/${newAvatarName}`));
+  
+  return newAvatarName;
 }
 
 /**

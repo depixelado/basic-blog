@@ -24,6 +24,9 @@ app.all('*', auth.isAuthenticated);
 // Use the passport package in our application
 app.use(passport.initialize());
 
+// Static
+app.use(express.static('public'))
+
 // Register routes
 app.use('/api', routes);
 
