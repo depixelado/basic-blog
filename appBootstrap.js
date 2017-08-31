@@ -19,7 +19,7 @@ app.use(helmet());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.all('*', auth.isAuthenticated);
+// app.all('*', auth.isAuthenticated);
 
 // Use the passport package in our application
 app.use(passport.initialize());

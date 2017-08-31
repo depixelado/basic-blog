@@ -1,8 +1,10 @@
 const express = require('express');
+
 const pagination = require('./../middlewares/pagination');
 const requiredFields = require('./../middlewares/requiredFields');
 const userController = require('./../controllers/userController');
 const sortingFields = require('./../middlewares/sortingFields');
+const auth = require('./../middlewares/auth');
 
 const router = express.Router();
 
@@ -15,15 +17,27 @@ router.route('/').get(
 );
 
 /* POST request to create a User */
-router.route('/').post(userController.store);
+router.route('/').post(
+  auth.isAuthenticated,
+  userController.store
+);
 
 /* GET request to show a User */
-router.route('/:userId').get(requiredFields, userController.show)
+router.route('/:userId').get(
+  requiredFields, 
+  userController.show
+);
 
 /* PUT request to update a User */
-router.route('/:userId').put(userController.update)
+router.route('/:userId').put(
+  auth.isAuthenticated,
+  userController.update
+);
 
 /* DELETE request to delete a User */
-router.route('/:userId').delete(userController.remove);
+router.route('/:userId').delete(
+  auth.isAuthenticated,
+  userController.remove
+);
 
 module.exports = router;

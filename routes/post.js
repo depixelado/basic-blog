@@ -1,8 +1,10 @@
 const express = require('express');
+
 const pagination = require('./../middlewares/pagination');
 const requiredFields = require('./../middlewares/requiredFields');
 const sortingFields = require('./../middlewares/sortingFields');
 const postController = require('./../controllers/postController');
+const auth = require('./../middlewares/auth');
 
 const router = express.Router();
 
@@ -15,7 +17,10 @@ router.route('/').get(
 );
 
 /* POST request to create a Post */
-router.route('/').post(postController.store);
+router.route('/').post(
+  auth.isAuthenticated,
+  postController.store
+);
 
 /* GET request to show a Post */
 router.route('/:postId').get(
@@ -25,7 +30,11 @@ router.route('/:postId').get(
 );
 
 /* PUT request to update a Post */
-router.route('/:postId').put(postController.update)
+router.route('/:postId').put(
+  auth.isAuthenticated,
+  auth.isAuthenticated, 
+  postController.update
+)
 
 /* DELETE request to delete a Post */
 router.route('/:postId').delete(postController.remove);
@@ -49,12 +58,21 @@ router.route('/:postId/comments/:commentId').get(
 );
 
 /* POST request to create a Comment */
-router.route('/:postId/comments').post(postController.commentStore);
+router.route('/:postId/comments').post(
+  auth.isAuthenticated,
+  postController.commentStore
+);
 
 /* PUT request to update a Comment */
-router.route('/:postId/comments/:commentId').put(postController.updateComment);
+router.route('/:postId/comments/:commentId').put(
+  auth.isAuthenticated,
+  postController.updateComment
+);
 
 /* DELETE request to delete a Post */
-router.route('/:postId/comments/:commentId').delete(postController.removeComment);
+router.route('/:postId/comments/:commentId').delete(
+  auth.isAuthenticated,
+  postController.removeComment
+);
 
 module.exports = router;
