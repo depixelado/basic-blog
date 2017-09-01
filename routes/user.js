@@ -22,6 +22,12 @@ router.route('/').post(
   userController.store
 );
 
+router.route('/me').get( 
+  auth.isAuthenticated,
+  requiredFields,
+  userController.me
+);
+
 /* GET request to show a User */
 router.route('/:userId').get(
   requiredFields, 

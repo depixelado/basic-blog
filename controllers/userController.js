@@ -134,3 +134,28 @@ exports.remove = function remove(req, res) {
         .json({ message: 'Error: Unable to delete the resource' });
     });
 }
+
+/**
+ * @author Daniel Jimenez <jimenezdaniel87@gmail.com>
+ * @function me
+ * @param {Object} req HTTP request object
+ * @param {Object} res HTTP response object
+ * @description Returns authenticated user resource. Used as well to check authentication
+ */
+exports.me = function me(req, res) {
+  // Get required fields
+  const fieldsMap = utils.getRequiredFieldsMap(req, userHiddenApiFields);
+  
+  User.findById(req.user._id, fieldsMap).exec()
+    .then(user => {
+      res.json({ 
+        data: user 
+      });
+    })
+    .catch((err) => {
+      res
+      .status(HttpStatus.INTERNAL_SERVER_ERROR)
+      .json({ message: err });
+    });
+}
+
